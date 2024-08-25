@@ -1,24 +1,26 @@
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
-import './App.css';  
+import './App.css';
 
 function App() {
     const [input, setInput] = useState('');
     const [response, setResponse] = useState(null);
     const [error, setError] = useState('');
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);  
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');
         setResponse(null);
+        setIsLoading(true);  
 
         try {
             const parsedData = JSON.parse(input);
             if (!parsedData || !Array.isArray(parsedData.data)) {
                 setError('Invalid JSON format');
+                setIsLoading(false); 
                 return;
             }
 
@@ -26,6 +28,8 @@ function App() {
             setResponse(result.data);
         } catch (err) {
             setError('An error occurred while fetching data.');
+        } finally {
+            setIsLoading(false);  
         }
     };
 
@@ -87,7 +91,7 @@ function App() {
                 isMulti
                 onChange={handleSelectChange}
             />
-            {renderResponse()}
+            {isLoading ? <p>Loading...</p> : renderResponse()}  
         </div>
     );
 }
